@@ -17,4 +17,13 @@ config.resolver.nodeModulesPaths = [
 // hierarchical lookup here previously blocked Metro from ever finding them.
 config.resolver.disableHierarchicalLookup = false;
 
+// The `firebase` package's package.json "exports" field, combined with
+// Metro's package-exports resolution, can resolve firebase/app and
+// firebase/auth to two different internal module instances — the auth
+// component registers itself against one, getAuth() looks it up on the
+// other, and you get "Component auth has not been registered yet" even
+// though the code is correct. Disabling it forces Metro to use the plain
+// "main" entry point instead, so there's only ever one instance.
+config.resolver.unstable_enablePackageExports = false;
+
 module.exports = config;
