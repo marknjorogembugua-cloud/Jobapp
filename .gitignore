@@ -8,6 +8,10 @@ dist/
 # Expo
 .expo/
 .expo-shared/
+# apps/mobile is a managed Expo app — android/ and ios/ are `expo prebuild`
+# output, regenerated fresh by EAS on every build. Don't commit them.
+apps/mobile/android/
+apps/mobile/ios/
 
 # Prisma
 apps/api/prisma/*.db
