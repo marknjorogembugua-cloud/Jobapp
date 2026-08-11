@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Amon",
+    "slug": "amon",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#141A2B"
+    },
+    "android": {
+      "package": "com.amon.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#C1652E"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.amon.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Amon needs camera access so you can take a photo of your ID and a selfie for worker verification.",
+        "NSPhotoLibraryUsageDescription": "Amon needs photo library access so you can upload your ID and a selfie for worker verification."
+      }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Amon needs photo library access so you can upload your ID and a selfie for worker verification.",
+          "cameraPermission": "Amon needs camera access so you can take a photo of your ID and a selfie for worker verification."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#C1652E"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "02c12c36-9ac9-4e54-8fa0-e2a84410b9fc"
+      }
+    },
+    "owner": "terrabyte_404"
+  }
+}

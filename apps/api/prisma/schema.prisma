@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  customer
+  worker
+  admin
+}
+
+enum WorkerStatus {
+  pending_review
+  approved
+  rejected
+  suspended
+}
+
+enum BookingStatus {
+  pending
+  accepted
+  declined
+  completed
+  cancelled
+}
+
+enum MessageType {
+  text
+  image
+}
+
+enum PaymentStatus {
+  pending
+  success
+  failed
+}
+
+model User {
+  id             String   @id @default(uuid())
+  firebaseUid    String   @unique
+  role           UserRole
+  phone          String?  @unique
+  email          String?  @unique
+  name           String
+  suspended      Boolean  @default(false)
+  expoPushToken  String?
+  createdAt      DateTime @default(now())
+
+  workerProfile WorkerProfile?
+  bookingsAsCustomer Booking[] @relation("CustomerBookings")
+  messages    Message[]
+  reviews     Review[]
+
+  @@map("users")
+}
+
+model Category {
+  id       String   @id @default(uuid())
+  name     String   @unique
+  icon     String
+  workers  WorkerProfile[]
+  bookings Booking[]
+
+  @@map("categories")
+}
+
+model WorkerProfile {
+  userId          String       @id
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId      String
+  category        Category     @relation(fields: [categoryId], references: [id])
+  businessName    String?
+  bio             String       @default("")
+  skills          String[]     @default([])
+  yearsExperience Int          @default(0)
+  county          String
+  town            String
+  lat             Float?
+  lng             Float?
+  languages       String[]     @default([])
+  startingPrice   Decimal      @db.Decimal(10, 2)
+  workingHours    String       @default("")
+  status          WorkerStatus @default(pending_review)
+  idPhotoUrl      String?
+  selfieUrl       String?
+  profilePhotoUrl String?
+  ratingAverage   Float        @default(0)
+  ratingCount     Int          @default(0)
+  createdAt       DateTime     @default(now())
+
+  bookings Booking[]
+
+  @@index([categoryId, county, town])
+  @@map("worker_profiles")
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  customerId  String
+  customer    User          @relation("CustomerBookings", fields: [customerId], references: [id])
+  workerId    String
+  worker      WorkerProfile @relation(fields: [workerId], references: [userId])
+  categoryId  String
+  category    Category      @relation(fields: [categoryId], references: [id])
+  date        DateTime
+  timeWindow  String
+  description String
+  photos      String[]      @default([])
+  address     String
+  budget      Decimal?      @db.Decimal(10, 2)
+  status      BookingStatus @default(pending)
+  customerConfirmedAt DateTime?
+  workerConfirmedAt   DateTime?
+  createdAt   DateTime      @default(now())
+
+  messages Message[]
+  review   Review?
+  payments Payment[]
+
+  @@index([customerId])
+  @@index([workerId])
+  @@map("bookings")
+}
+
+model Payment {
+  id                  String        @id @default(uuid())
+  bookingId           String
+  booking             Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  phone               String
+  amount              Decimal       @db.Decimal(10, 2)
+  status              PaymentStatus @default(pending)
+  merchantRequestId   String?
+  checkoutRequestId   String?       @unique
+  mpesaReceiptNumber  String?
+  resultDesc          String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  @@index([bookingId])
+  @@map("payments")
+}
+
+model Message {
+  id        String      @id @default(uuid())
+  bookingId String
+  booking   Booking     @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User        @relation(fields: [senderId], references: [id])
+  type      MessageType @default(text)
+  body      String
+  createdAt DateTime    @default(now())
+
+  @@index([bookingId])
+  @@map("messages")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  bookingId String   @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  rating    Int
+  text      String   @default("")
+  createdAt DateTime @default(now())
+
+  @@map("reviews")
+}
