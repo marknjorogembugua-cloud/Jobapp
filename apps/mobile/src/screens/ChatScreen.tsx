@@ -61,7 +61,7 @@ export function ChatScreen({ bookingId, currentUserId, onBack }: Props) {
   async function handleSendImage() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) return;
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.6 });
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"], quality: 0.6 });
     if (result.canceled) return;
 
     setSending(true);

@@ -11,6 +11,10 @@ config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, "node_modules"),
   path.resolve(workspaceRoot, "node_modules"),
 ];
-config.resolver.disableHierarchicalLookup = true;
+// Left at the default (false): some SDK 54 packages (e.g. expo-asset) get
+// installed nested inside another package's own node_modules rather than
+// hoisted, depending on how npm resolves peer conflicts. Disabling
+// hierarchical lookup here previously blocked Metro from ever finding them.
+config.resolver.disableHierarchicalLookup = false;
 
 module.exports = config;
